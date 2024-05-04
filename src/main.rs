@@ -14,13 +14,13 @@ fn main() {
         print_help(program);
         exit(0);
     }
-    let path = args.get(1).expect("Path not found");
+
     let max = args
         .get(2)
         .expect("No max files to keep specified.")
         .parse()
         .expect("Invalid max files.");
-    let files = files_to_delete(path, max);
+    let files = files_to_delete(&first_arg, max);
     let skip_confirm = args.get(3);
 
     if skip_confirm.is_some() && skip_confirm.unwrap() == "--skip-confirm" {
@@ -78,7 +78,7 @@ fn files_to_delete(path: &str, max: usize) -> Vec<String> {
         println!("No files to delete.");
         exit(0);
     }
-    let (_, files_to_delete) = files.split_at(max);
+    let files_to_delete = files.into_iter().skip(max);
     let mut can_delete_file: Vec<String> = Vec::new();
     for f in files_to_delete {
         can_delete_file.push(f.path().to_str().unwrap().to_string())
@@ -87,8 +87,5 @@ fn files_to_delete(path: &str, max: usize) -> Vec<String> {
 }
 
 fn delete_file(path: &String) {
-    let r = fs::remove_file(path);
-    if r.is_err() {
-        eprintln!("Cannot delete file {} because: {}", path, r.unwrap_err())
-    }
+    let _ = fs::remove_file(path).map_err(|err| eprintln!("Cannot delete file {} because: {}", path, err));
 }
