@@ -5,4 +5,4 @@ to keep.
 That's it.
 
 **Usage**
-program <path> \<max files to keep> [--skip-confirm]
+program \<path> \<max files to keep> [--skip-confirm]
